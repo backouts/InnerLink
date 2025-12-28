@@ -1,6 +1,7 @@
 package com.backouts.innerlink.member.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "member")
 @EntityListeners(AuditingEntityListener.class)
+@Getter
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

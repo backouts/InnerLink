@@ -1,5 +1,7 @@
 package com.backouts.innerlink.member.service;
 
+import com.backouts.innerlink.global.error.CustomException;
+import com.backouts.innerlink.global.error.ErrorCode;
 import com.backouts.innerlink.member.domain.Member;
 import com.backouts.innerlink.member.dto.SignupRequest;
 import com.backouts.innerlink.member.repository.MemberRepository;
@@ -18,24 +20,28 @@ public class MemberSignupService {
     }
 
     public void signup(SignupRequest request) {
-        if (memberRepository.existsByEmail(request.email)) {
-            throw new RuntimeException("이메일이 중복됩니다.");
+        if (memberRepository.existsByEmail(request.email())) {
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
-        if (memberRepository.existsByNickname(request.nickname)) {
-            throw new RuntimeException("닉네임이 중복됩니다.");
+        if (memberRepository.existsByNickname(request.nickname())) {
+            throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
-
-        if (!request.password.equals(request.passwordCheck)) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        if (!request.password().equals(request.passwordCheck())) {
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
-        String encodedPassword = passwordEncoder.encode(request.password);
+
+        if (!request.privacyAgreed()) {
+            throw new CustomException(ErrorCode.PRIVACY_NOT_AGREED);
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.password());
 
         Member member = Member.signup(
-                request.email,
-                request.name,
-                request.nickname,
+                request.email(),
+                request.name(),
+                request.nickname(),
                 encodedPassword
         );
 
